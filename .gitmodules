@@ -1,0 +1,3 @@
+[submodule "threadwithqueue"]
+	path = threadwithqueue
+	url = https://github.com/sjalin/threadwithqueue.git
