@@ -62,11 +62,17 @@ class SlApi(ThreadWithQueue):
     def get_data(self):
         self.log.info('Get new data from SL')
         URL = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={config.API_KEY}&siteid={self.site_id}&timewindow={self.timewindow}'
-        r = requests.get(url=URL)
+        self.next_departure = 0
+
+        try:
+            r = requests.get(url=URL)
+        except requests.exceptions.ConnectionError as e:
+            self.log.warning(e)
+            return
+
         data = r.json()
 
         buses = []
-        self.next_departure = 0
         try:
             for b in data['ResponseData']['Buses']:
                 if b['Destination'] == 'Kallhälls station':
@@ -79,6 +85,8 @@ class SlApi(ThreadWithQueue):
                                   b['ExpectedDateTime'].split('T')[1]))
         except KeyError as e:
             self.log.warning(e)
+            return
+
         self.log.info(f'Next departure in {int(self.next_departure - time.time())}s')
         if self.last_buses != buses:
             if not self.next_departure:
