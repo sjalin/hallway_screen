@@ -2,3 +2,4 @@ paho-mqtt
 pillow
 numpy
 requests
+python-dateutil

@@ -22,18 +22,16 @@ MIRACODE_URL = f'https://github.com/IdreesInc/Miracode/releases/download/v1.0/{M
 class Screen(ThreadWithQueue):
     def __init__(self):
         super().__init__()
-        self.last_temp_time = '99:99:99'
-        self.last_sl_time = '99:99:99'
-        self.outside_temp = -77.7
-        self.outside_hum = 1337
-        self.inside_temp = -77.7
-        self.inside_hum = 1337
+        self.last_temp_time = ''
+        self.last_sl_time = ''
+        self.last_smhi_time = ''
+        self.outside_temp = None
+        self.outside_hum = None
+        self.inside_temp = None
+        self.inside_hum = None
+        self.precipitation = []
 
-        self.departures = [(555, True, '17:43:32', '17:44:44'),
-                           (535, False, '17:50:32', '17:50:44'),
-                           (555, True, '18:43:32', '18:44:44'),
-                           (555, True, '19:43:32', '19:44:44'),
-                           (555, True, '23:43:32', '23:44:44'), ]
+        self.departures = []
 
         self.width = config.DEBUG_WIDTH
         self.height = config.DEBUG_HEIGHT
@@ -89,6 +87,9 @@ class Screen(ThreadWithQueue):
         elif msg[0] == 'buses':
             self.departures = msg[1]
             self.last_sl_time = datetime.datetime.now().strftime('%H:%M:%S')
+        elif msg[0] == 'precipitation':
+            self.precipitation = msg[1]
+            self.last_smhi_time = datetime.datetime.now().strftime('%H:%M:%S')
 
         if self._message_queue.empty():
             self.draw_screen()
@@ -98,21 +99,29 @@ class Screen(ThreadWithQueue):
         image = self.base_image.copy()
         # Temperatures
         ImageDraw.Draw(image).text((10, 10), '    Utomhus:', font=self.font30)
-        ImageDraw.Draw(image).text((10, 50), f'{str(self.outside_temp).rjust(5)}°C', font=self.font60)
-        ImageDraw.Draw(image).text((10, 120), f'{str(self.outside_hum).rjust(5)}% ', font=self.font60)
-        ImageDraw.Draw(image).text((10, 190), '     Regn:', font=self.font30)
-        ImageDraw.Draw(image).text((10, 230), '77mm @ 13:37', font=self.font45)
-        ImageDraw.Draw(image).text((10, 285), '    Inomhus:', font=self.font30)
-        ImageDraw.Draw(image).text((10, 325), f'{str(self.inside_temp).rjust(5)}°C', font=self.font60)
-        ImageDraw.Draw(image).text((10, 395), f'{str(self.inside_hum).rjust(5)}% ', font=self.font60)
+        if self.outside_temp is not None:
+            ImageDraw.Draw(image).text((10, 50), f'{str(self.outside_temp).rjust(7)}°C', font=self.font45)
+        if self.outside_hum is not None:
+            ImageDraw.Draw(image).text((10, 105), f'{str(self.outside_hum).rjust(7)}% ', font=self.font45)
+        ImageDraw.Draw(image).text((10, 160), '    Inomhus:', font=self.font30)
+        if self.inside_temp is not None:
+            ImageDraw.Draw(image).text((10, 200), f'{str(self.inside_temp).rjust(7)}°C', font=self.font45)
+        if self.inside_hum is not None:
+            ImageDraw.Draw(image).text((10, 255), f'{str(self.inside_hum).rjust(7)}% ', font=self.font45)
+        ImageDraw.Draw(image).text((10, 310), f'Last update: {self.last_temp_time}', font=self.font20)
 
-        ImageDraw.Draw(image).text((10, 450), f'Last update: {self.last_temp_time}', font=self.font20)
-        ImageDraw.Draw(image).text((self.half_offset + 10, 450), f'Last update: {self.last_sl_time}', font=self.font20)
-
+        # Rain
+        ImageDraw.Draw(image).text((10, 340), '     Regn:', font=self.font30)
+        if self.precipitation:
+            ImageDraw.Draw(image).text((10, 380), f'{str(self.precipitation[0][0].time())[:-3]} - {self.precipitation[0][1]}mm', font=self.font30)
+            ImageDraw.Draw(image).text((10, 420), f'{str(self.precipitation[1][0].time())[:-3]} - {self.precipitation[1][1]}mm', font=self.font30)
+        ImageDraw.Draw(image).text((10, 460), f'Last update: {self.last_smhi_time}', font=self.font20)
 
         # SL Stuff
         for e, d in enumerate(self.departures):
             ImageDraw.Draw(image).text((self.half_offset + 10, 10 + e*90), f'{d[0]} |  {d[2]}\n {"X" if d[1] else " "}  | ({d[3]})\n-----------------', font=self.font30)
+        ImageDraw.Draw(image).text((self.half_offset + 10, 450), f'Last update: {self.last_sl_time}', font=self.font20)
+
         # Save the image as BMP
         image = image.convert("1")
         if config.DEBUG:
