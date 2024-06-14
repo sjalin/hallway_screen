@@ -1,4 +1,6 @@
+import logging
 import time
+from json import JSONDecodeError
 from queue import SimpleQueue
 
 import requests
@@ -70,7 +72,10 @@ class SlApi(ThreadWithQueue):
             self.log.warning(e)
             return
 
-        data = r.json()
+        try:
+            data = r.json()
+        except JSONDecodeError as e:
+            logging.warning(e)
 
         buses = []
         try:
