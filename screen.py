@@ -108,19 +108,19 @@ class Screen(ThreadWithQueue):
             ImageDraw.Draw(image).text((10, 200), f'{str(self.inside_temp).rjust(7)}°C', font=self.font45)
         if self.inside_hum is not None:
             ImageDraw.Draw(image).text((10, 255), f'{str(self.inside_hum).rjust(7)}% ', font=self.font45)
-        ImageDraw.Draw(image).text((10, 310), f'Last update: {self.last_temp_time}', font=self.font20)
+        ImageDraw.Draw(image).text((10, 310), f'Uppdaterad: {self.last_temp_time}', font=self.font20)
 
         # Rain
         ImageDraw.Draw(image).text((10, 340), '     Regn:', font=self.font30)
         if self.precipitation:
             ImageDraw.Draw(image).text((10, 380), f'{str(self.precipitation[0][0].time())[:-3]} - {self.precipitation[0][1]}mm', font=self.font30)
             ImageDraw.Draw(image).text((10, 420), f'{str(self.precipitation[1][0].time())[:-3]} - {self.precipitation[1][1]}mm', font=self.font30)
-        ImageDraw.Draw(image).text((10, 460), f'Last update: {self.last_smhi_time}', font=self.font20)
+        ImageDraw.Draw(image).text((10, 460), f'Uppdaterad: {self.last_smhi_time}', font=self.font20)
 
         # SL Stuff
         for e, d in enumerate(self.departures):
             ImageDraw.Draw(image).text((self.half_offset + 10, 10 + e*90), f'{d[0]} |  {d[2]}\n {"X" if d[1] else " "}  | ({d[3]})\n-----------------', font=self.font30)
-        ImageDraw.Draw(image).text((self.half_offset + 10, 450), f'Last update: {self.last_sl_time}', font=self.font20)
+        ImageDraw.Draw(image).text((self.half_offset + 10, 450), f'Uppdaterad: {self.last_sl_time}', font=self.font20)
 
         # Save the image as BMP
         image = image.convert("1")
