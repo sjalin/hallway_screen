@@ -74,22 +74,22 @@ class Screen(ThreadWithQueue):
     def _handle_message(self, msg):
         if msg[0] == 'out-temp':
             self.outside_temp = msg[1]
-            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S')
+            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S %-d/%-m')
         elif msg[0] == 'out-hum':
             self.outside_hum = msg[1]
-            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S')
+            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S %-d/%-m')
         elif msg[0] == 'in-temp':
             self.inside_temp = msg[1]
-            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S')
+            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S %-d/%-m')
         elif msg[0] == 'in-hum':
             self.inside_hum = msg[1]
-            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S')
+            self.last_temp_time = datetime.datetime.now().strftime('%H:%M:%S %-d/%-m')
         elif msg[0] == 'buses':
             self.departures = msg[1]
-            self.last_sl_time = datetime.datetime.now().strftime('%H:%M:%S')
+            self.last_sl_time = datetime.datetime.now().strftime('%H:%M:%S %-d/%-m')
         elif msg[0] == 'precipitation':
             self.precipitation = msg[1]
-            self.last_smhi_time = datetime.datetime.now().strftime('%H:%M:%S')
+            self.last_smhi_time = datetime.datetime.now().strftime('%H:%M:%S %-d/%-m')
 
         if self._message_queue.empty():
             self.draw_screen()
