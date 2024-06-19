@@ -31,7 +31,7 @@ class SMHIApi(ThreadWithQueue):
                 else:
                     self._handle_message(msg)
             self.get_data()
-            time.sleep(10)  # TODO: Change to 10 minutes
+            time.sleep(10 * 60)
 
     def _handle_message(self, msg):
         if msg[0] == 'Poll':
@@ -40,7 +40,12 @@ class SMHIApi(ThreadWithQueue):
     def get_data(self):
         url = f'https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/{config.LONG}/lat/{config.LAT}/data.json'
 
-        r = requests.get(url=url)
+        try:
+            r = requests.get(url=url)
+        except requests.exceptions.ConnectionError:
+            time.sleep(30 * 60)
+            return
+
         data = r.json()
         data = data['timeSeries']
         self.log.debug(f'Len(data): {len(data)}')
