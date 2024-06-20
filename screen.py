@@ -113,8 +113,12 @@ class Screen(ThreadWithQueue):
         # Rain
         ImageDraw.Draw(image).text((10, 340), '     Regn:', font=self.font30)
         if self.precipitation:
-            ImageDraw.Draw(image).text((10, 380), f'{str(self.precipitation[0][0].time())[:-3]} - {self.precipitation[0][1]}mm', font=self.font30)
-            ImageDraw.Draw(image).text((10, 420), f'{str(self.precipitation[1][0].time())[:-3]} - {self.precipitation[1][1]}mm', font=self.font30)
+            try:
+                ImageDraw.Draw(image).text((10, 380), f'{str(self.precipitation[0][0].time())[:-3]} - {self.precipitation[0][1]}mm', font=self.font30)
+                ImageDraw.Draw(image).text((10, 420), f'{str(self.precipitation[1][0].time())[:-3]} - {self.precipitation[1][1]}mm', font=self.font30)
+            except IndexError:
+                # Easier that looking at the length of the array..........
+                pass
         ImageDraw.Draw(image).text((10, 460), f'Uppdaterad: {self.last_smhi_time}', font=self.font20)
 
         # SL Stuff
