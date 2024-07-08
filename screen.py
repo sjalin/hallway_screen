@@ -97,6 +97,7 @@ class Screen(ThreadWithQueue):
     def draw_screen(self):
         self.log.info('Draw new screen')
         image = self.base_image.copy()
+
         # Temperatures
         ImageDraw.Draw(image).text((10, 10), '    Utomhus:', font=self.font30)
         if self.outside_temp is not None:
@@ -124,7 +125,7 @@ class Screen(ThreadWithQueue):
         # SL Stuff
         for e, d in enumerate(self.departures):
             ImageDraw.Draw(image).text((self.half_offset + 10, 10 + e*90), f'{d[0]} |  {d[2]}\n {"X" if d[1] else " "}  | ({d[3]})\n-----------------', font=self.font30)
-        ImageDraw.Draw(image).text((self.half_offset + 10, 450), f'Uppdaterad: {self.last_sl_time}', font=self.font20)
+        ImageDraw.Draw(image).text((self.half_offset + 10, 460), f'Uppdaterad: {self.last_sl_time}', font=self.font20)
 
         # Save the image as BMP
         image = image.convert("1")
