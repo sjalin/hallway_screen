@@ -5,12 +5,14 @@ SENSOR_TOPICS = [('homie/homey/temp-sensor-garden/measure-temperature', 1),     
                  ('homie/homey/temp-sensor-living-room/measure-temperature', 1),    # Inside temp topic
                  ('homie/homey/temp-sensor-living-room/measure-humidity', 1)]       # Inside humidity topic
 
-# SL config
-API_KEY = '123FART321COWABONGA' # Fill in your own API-key
-
 # SMHI config
 LAT = 17.886781
 LONG = 59.322097
+
+# SL confic
+SITE_ID = 5761      # Don't remember how to to find this
+TIME_WINDOW = 60    # How far in the future to look for departuresdepartures
+DESTINATION = 'Kallhälls station'
 
 # Debug = not running on e-ink-display
 DEBUG = False

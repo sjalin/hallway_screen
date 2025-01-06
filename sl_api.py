@@ -45,25 +45,9 @@ class SlApi(ThreadWithQueue):
         if msg[0] == 'Poll':
             self.get_data()
 
-    def get_new_data(self):
-        URL = f'https://transport.integration.sl.se/v1/sites/{9192}/departures'
-
-        URL = f'https://transport.integration.sl.se/v1/sites/5761/departures?transport=BUS&forecast=60'
-        r = requests.get(url=URL)
-        data = r.json()
-
-        buses = []
-        for b in data['ResponseData']['Buses']:
-            if b['Destination'] == 'Kallhälls station':
-                buses.append((b['LineNumber'],
-                              b['JourneyDirection'] == 2,
-                              b['TimeTabledDateTime'].split('T')[1],
-                              b['ExpectedDateTime'].split('T')[1]))
-        self.report_queue.put(('buses', buses))
-
     def get_data(self):
         self.log.info('Get new data from SL')
-        URL = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={config.API_KEY}&siteid={self.site_id}&timewindow={self.timewindow}'
+        URL = f'https://transport.integration.sl.se/v1/sites/{config.SITE_ID}/departures?transport=BUS&forecast={config.TIME_WINDOW}'
         self.next_departure = 0
 
         try:
@@ -79,15 +63,15 @@ class SlApi(ThreadWithQueue):
 
         buses = []
         try:
-            for b in data['ResponseData']['Buses']:
-                if b['Destination'] == 'Kallhälls station':
+            for b in data['departures']:
+                if b['destination'] == config.DESTINATION:
                     if not self.next_departure:
-                        self.next_departure = time.mktime(time.strptime(b['ExpectedDateTime'], '%Y-%m-%dT%H:%M:%S'))
+                        self.next_departure = time.mktime(time.strptime(b['expected'], '%Y-%m-%dT%H:%M:%S'))
                         self.log.info(f'New next departure {self.next_departure} ({time.time()})')
-                    buses.append((b['LineNumber'],
-                                  b['JourneyDirection'] == 1,
-                                  b['TimeTabledDateTime'].split('T')[1],
-                                  b['ExpectedDateTime'].split('T')[1]))
+                    buses.append((b['line']['designation'],
+                                  b['direction_code'] == 1,
+                                  b['scheduled'].split('T')[1],
+                                  b['expected'].split('T')[1]))
         except KeyError as e:
             self.log.warning(e)
             return
@@ -96,7 +80,7 @@ class SlApi(ThreadWithQueue):
         if self.last_buses != buses:
             if not self.next_departure:
                 self.next_departure = time.time() + 60 * 1
-                self.log.warning(f'No departures {data["ResponseData"]["Buses"]}')
+                self.log.warning(f'No departures {data["departures"]}')
             self.report_queue.put(('buses', buses))
         self.log.info(buses)
         self.last_buses = buses
