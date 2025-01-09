@@ -114,7 +114,7 @@ class Screen(ThreadWithQueue):
         ImageDraw.Draw(image).text((10, 310), f'Uppdaterad: {self.last_temp_time}', font=self.font20)
 
         # Rain
-        ImageDraw.Draw(image).text((10, 340), '     Regn:', font=self.font30)
+        ImageDraw.Draw(image).text((10, 340), '  Nederbörd:', font=self.font30)
         if self.precipitation:
             try:
                 ImageDraw.Draw(image).text((10, 380), f'{str(self.precipitation[0][0].time())[:-3]} {self.precipitation[0][0].day}/{self.precipitation[0][0].month} - {self.precipitation[0][1]}mm', font=self.font30)

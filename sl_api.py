@@ -42,6 +42,7 @@ class SlApi(ThreadWithQueue):
             time.sleep(30)
 
     def _handle_message(self, msg):
+        print("Are we here")
         if msg[0] == 'Poll':
             self.get_data()
 
