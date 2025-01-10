@@ -34,15 +34,16 @@ class SlApi(ThreadWithQueue):
             if self.next_check < time.time():
                 self.get_data()
                 now = time.time()
-                if self.next_departure - now < 300:
+                if self.next_departure == 0:
+                    self.next_check = now + 600
+                elif self.next_departure - now < 300:
                     self.next_check = now + 60
                 else:
-                    self.next_check = self.next_departure - 300
+                    self.next_check = self.next_departure - 290
                 self.log.info(f'Next check in  {int(self.next_check - now)}')
             time.sleep(30)
 
     def _handle_message(self, msg):
-        print("Are we here")
         if msg[0] == 'Poll':
             self.get_data()
 
@@ -73,6 +74,8 @@ class SlApi(ThreadWithQueue):
                                   b['direction_code'] == 1,
                                   b['scheduled'].split('T')[1],
                                   b['expected'].split('T')[1]))
+                    if len(buses) >= 5:
+                        break
         except KeyError as e:
             self.log.warning(e)
             return
