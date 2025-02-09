@@ -9,7 +9,7 @@ SENSOR_TOPICS = [('homie/homey/temp-sensor-garden/measure-temperature', 1),     
 LAT = 17.886781
 LONG = 59.322097
 
-# SL confic
+# SL config
 SITE_ID = 5761      # Don't remember how to to find this
 TIME_WINDOW = 60    # How far in the future to look for departuresdepartures
 DESTINATION = 'Kallhälls station'

@@ -11,16 +11,14 @@ from threadwithqueue.threadwithqueue import ThreadWithQueue
 
 class SMHIApi(ThreadWithQueue):
     def __init__(self, r_queue: SimpleQueue):
-        super().__init__()
+        super().__init__(log_to_file=True)
         self.report_queue = r_queue
 
         self.timewindow = 60
         self.next_check = 0
         self.precipitation_list = []
-        print('SMHI init')
 
     def run(self):
-        print('SMHI run')
         self.log.info(f'Run')
         while True:
             msg = self._get_message()

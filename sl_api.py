@@ -11,7 +11,7 @@ from threadwithqueue.threadwithqueue import ThreadWithQueue
 
 class SlApi(ThreadWithQueue):
     def __init__(self, r_queue: SimpleQueue):
-        super().__init__()
+        super().__init__(log_to_file=True)
         self.last_buses = None
         self.report_queue = r_queue
 

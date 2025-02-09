@@ -13,7 +13,7 @@ log = None
 
 class MQTTListener(ThreadWithQueue):
     def __init__(self, r_queue: SimpleQueue):
-        super().__init__()
+        super().__init__(log_to_file=True)
         global report_queue
         report_queue = r_queue
         global log

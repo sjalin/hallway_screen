@@ -21,7 +21,7 @@ MIRACODE_URL = f'https://github.com/IdreesInc/Miracode/releases/download/v1.0/{M
 
 class Screen(ThreadWithQueue):
     def __init__(self):
-        super().__init__()
+        super().__init__(log_to_file=True)
         self.last_temp_time = ''
         self.last_sl_time = ''
         self.last_smhi_time = ''
