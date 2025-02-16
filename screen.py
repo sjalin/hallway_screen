@@ -126,7 +126,7 @@ class Screen(ThreadWithQueue):
 
         # SL Stuff
         for e, d in enumerate(self.departures):
-            ImageDraw.Draw(image).text((self.half_offset + 10, 10 + e*90), f'{d[0]} |  {d[2]}\n {"X" if d[1] else " "}  | ({d[3]})\n-----------------', font=self.font30)
+            ImageDraw.Draw(image).text((self.half_offset + 10, 10 + e*90), f'{d[0]} | {d[2]}\n{"<--" if d[1] else "-->"} | ({d[3]})\n-----------------', font=self.font30)
         ImageDraw.Draw(image).text((self.half_offset + 10, 460), f'Uppdaterad: {self.last_sl_time}', font=self.font20)
 
         # Save the image as BMP
