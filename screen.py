@@ -134,11 +134,11 @@ class Screen(ThreadWithQueue):
         if config.DEBUG:
             image.show()
         else:
-            self.log.info('Prepare')
+            self.log.debug('Prepare')
             self.display.prepare()
-            self.log.info('clear')
+            self.log.debug('clear')
             self.display.clear()
-            self.log.info('display')
+            self.log.debug('display')
             self.display.display(image)
-            self.log.info('sleep')
+            self.log.debug('sleep')
             self.display.sleep()
