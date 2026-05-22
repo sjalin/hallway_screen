@@ -36,7 +36,10 @@ class SMHIApi(ThreadWithQueue):
             self.get_data()
 
     def get_data(self):
-        url = f'https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/{config.LONG}/lat/{config.LAT}/data.json'
+        rain_max = 'precipitation_amount_max'
+        rain_min = 'precipitation_amount_min'
+        rain_type = 'predominant_precipitation_type_at_surface'
+        url = f'https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{config.LONG}/lat/{config.LAT}/data.json?parameters={rain_max},{rain_min},{rain_type}'
 
         try:
             r = requests.get(url=url)
@@ -46,32 +49,18 @@ class SMHIApi(ThreadWithQueue):
 
         data = r.json()
         data = data['timeSeries']
-        self.log.debug(f'Len(data): {len(data)}')
         precipitation_list = []
         for x in data:
-            pmean = 0
-            pcat = 0
-            par = x['parameters']
-            for p in par:
-                if p['name'] == 'pmean':
-                    pmean = p['values'][0]
-                if p['name'] == 'pcat':
-                    pcat = p['values'][0]
-            if pmean:
-                now = datetime.datetime.now()
-                self.log.debug(f'Now: {now}')
-                self.log.debug(f'x[validTime]: {x["validTime"]}')
-                dt = dateutil.parser.parse(x['validTime'])
-                self.log.debug(f'dt: {dt}')
-                zone = 'Europe/Stockholm'
-                dt_zone = dt.astimezone(dateutil.tz.gettz(zone))
-                self.log.debug(f'dtZone: {dt_zone}')
-                self.log.debug(f'pmean: {pmean}')
-                self.log.debug(f'pcat: {pcat}')
-                precipitation_list.append([dt_zone, pmean, pcat])
+            rmin = x['data'][rain_min]
+            rmax = x['data'][rain_max]
+            pcat = x['data'][rain_type]
+
+            if rmax:
+                dt = dateutil.parser.parse(x['time'])
+                precipitation_list.append([dt, rmin, rmax, pcat])
             if len(precipitation_list) >= 3:
                 break
-        self.log.debug(precipitation_list)
+
         if self.precipitation_list != precipitation_list:
             self.precipitation_list = precipitation_list
             self.report_queue.put(('precipitation', self.precipitation_list))
